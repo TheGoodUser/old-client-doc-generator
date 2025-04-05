@@ -1,7 +1,7 @@
 # Exclude environment variables file
 .env
 
-# # Exclude firebase configs file
+# Exclude firebase configs file
 # firebase-config.json
 
 # Exclude Python virtual environment

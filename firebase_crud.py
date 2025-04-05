@@ -1,14 +1,12 @@
 from datetime import datetime as dt
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
-from firebase_admin import storage
+import firebase_admin # type: ignore
+from firebase_admin import credentials, firestore, storage # type: ignore
 import os
-# from dotenv import load_dotenv
+from dotenv import load_dotenv # type: ignore
 
 
 # load .env file
-# load_dotenv()
+load_dotenv()
 
 
 class FirebaseCrud:

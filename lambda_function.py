@@ -48,5 +48,5 @@ def _random_characters(*, count: int=10) -> str:
 '''
 
 
-# lambda_handler('', '')
+lambda_handler('', '')
 

@@ -15,3 +15,4 @@ venv/
 
 # Exclude Python bytecode cache
 __pycache__/
+

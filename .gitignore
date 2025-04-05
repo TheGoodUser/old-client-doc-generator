@@ -1,0 +1,14 @@
+# Exclude environment variables file
+.env
+
+# Exclude firebase configs file
+firebase-config.json
+
+# Exclude Python virtual environment
+venv/
+
+# Exclude VS Code settings
+.vscode/
+
+# Exclude Python bytecode cache
+__pycache__/

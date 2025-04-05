@@ -4,6 +4,9 @@
 # ignore the .igtignore
 .gitignore
 
+# ignore the firebase-config.json file
+firebase-config.json
+
 # Exclude Python virtual environment
 venv/
 

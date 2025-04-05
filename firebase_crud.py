@@ -1,15 +1,14 @@
 from datetime import datetime as dt
-import json
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import storage
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 
 # load .env file
-load_dotenv()
+# load_dotenv()
 
 
 class FirebaseCrud:
@@ -69,7 +68,7 @@ class FirebaseCrud:
         '''
         This function returns the limit number of requests an admin can request
         Its being dynamically managed from firestore to have a variable approach 
-        '''  
+        ''' 
         limit = self.__attendance_fetch_limit.get().to_dict().get("limit")
         return limit
 

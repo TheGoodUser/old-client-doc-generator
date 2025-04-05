@@ -1,8 +1,8 @@
 # Exclude environment variables file
 .env
 
-# Exclude firebase configs file
-firebase-config.json
+# ignore the .igtignore
+.gitignore
 
 # Exclude Python virtual environment
 venv/

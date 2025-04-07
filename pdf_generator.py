@@ -14,7 +14,7 @@ def generate_document(*, filename: list, data: list) -> str:
     """
 
     # Create or load the workbook
-    file_path = f"reports/{''.join(filename)}"
+    file_path = f"/tmp/{''.join(filename)}"
 
     # extract the month from the filename list
     month: str = filename[1]

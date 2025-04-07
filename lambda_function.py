@@ -2,51 +2,77 @@ import json
 from firebase_crud import FirebaseCrud
 import pdf_generator
 
+
 def lambda_handler(event, context):
+     # Handle preflight CORS request
+    if event.get("httpMethod") == "OPTIONS":
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+            },
+            'body': json.dumps({'message': 'CORS preflight success'})
+        }
+        
+    try:
+        # Parse incoming data
+        event_body = json.loads(event['body'])
+        month_name = event_body['monthname']
 
-    month_name = "march"
-    file_name = ["ATTENDANCE_REPORT_", month_name.upper(), ".xlsx"]
+        # NOTE Do not remove below code
+        # NOTE this format is being used because the file_name's 1st index i.e. monthname will be used in pdf generation
+        file_name = ["ATTENDANCE_REPORT_", month_name.upper(), ".xlsx"]
     
-    firebase_crud = FirebaseCrud()
+        download_metadata = {
+            'statusCode': 200,
+            'details': '',
+            'downloadUrl': '',
+        }
 
-    # fetch detailss
-    report = firebase_crud.fetch_attendance_details(month=month_name)
+        firebase_crud = FirebaseCrud()
 
-    print(report)
+        # Fetch attendance data
+        report = firebase_crud.fetch_attendance_details(month=month_name)
 
-    # # if True:
-    # if report['statusCode'] == 200:
-    #     # Data is available then generate the document
-    #     file_path = pdf_generator.generate_document(filename=file_name, data=report['body'])
+        if report['statusCode'] == 200:
+            # Generate file
+            file_path = pdf_generator.generate_document(filename=file_name, data=report['body'])
 
-    #     # upload and get the download url
-    #     data = firebase_crud.push_attendance_document(monthname=''.join(file_name), file_path=file_path)
-    #     print(data)
-    # #     firebase_crud.upload_document(filename=filename)
-    # else:
-    #     # this is the FAILED CASE, causing some issues
-    #     return {
-    #         "statusCode": report['statusCode'],
-    #         'details': report['details'],
-    #         'body': report['body']
-    #    }
+            # Upload and get download URL
+            file_generation_status = firebase_crud.push_attendance_document(file_path=file_path)
 
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Hello from Lambda! From GitHub Actions!')
-    }
+            download_metadata['statusCode'] = file_generation_status['statusCode']
+            download_metadata['details'] = file_generation_status['details']
+            download_metadata['downloadUrl'] = file_generation_status['downloadUrl']
+        else:
+            download_metadata['statusCode'] = report['statusCode']
+            download_metadata['details'] = report['details']
+            download_metadata['downloadUrl'] = None
 
-'''
-def _random_characters(*, count: int=10) -> str:
-    count = 25 if(count > 25) else count
-    count = 8 if(count < 0) else count
-    letters = [chr(i) for i in range(ord('a'), ord('z') + 1)]
-    random.shuffle(letters)
-    # random_characters = "".join(random.shuffle(letters))
-    # return random_characters
-    return "".join(letters[0: count])
-'''
+        # Return proper CORS headers for web access
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+            },
+            'body': json.dumps(download_metadata)
+        }
 
-
-lambda_handler('', '')
-
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST, GET'
+            },
+            'body': json.dumps({
+                'statusCode': 500,
+                'details': str(e),
+                'downloadUrl': None
+            })
+        }

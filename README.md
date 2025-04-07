@@ -1,63 +1,74 @@
-# Attendance PDF Generator
 
-This project is designed to generate attendance reports in XLSX format for clients. It automates the process of creating professional and organized attendance documents.
+# Attendance PDF Generator (AWS Lambda + Firebase)
 
-## Features
+This small project auto-generates attendance reports in XLSX format. Built for client-side usage with Firebase and AWS Lambda integration.
 
-- Generate attendance reports in XLSX format.
-- Supports exporting and saving XLSX locally.
-- It generates the the XLSX files with a daily limit of 10 API requests
+## 🔥 Features
 
-## Prerequisites
+- Create clean attendance XLSX reports.
+- Can be exported/downloaded locally.
+- AWS Lambda supported (with 10 request/day limit).
+- Firebase Storage used for uploading files.
 
-- Python 3.x
-- Required libraries:
-    - `reportlab`
-    - `openpyxl`
+## 🛠️ Prerequisites
 
-## Installation
+- Python 3.x installed
+- Setup a virtual environment locally (important!)
+- Required packages (via `requirements.txt`):
+  - `firebase_admin`
+  - `openpyxl`
+  - `dotenv` *(exclude this in production)*
 
-1. Clone the repository:
-     ```bash
-     git clone https://github.com/TheGoodUser/old-client-doc-generator.git
-     ```
-2. Navigate to the project directory:
-     ```bash
-     cd old-client-doc-generator
-     ```
-3. Install dependencies:
-     ```bash
-     pip install -r requirements.txt
-     ```
+> Note: On production (Lambda), `firebase_admin` & `openpyxl` are added as AWS Lambda layers. So locally, make sure to install them via pip.
 
-## Usage
+## 📦 Installation (for local use)
 
-1. For now these command are execute on the basis of the aws lambda function url.
+```bash
+git clone https://github.com/TheGoodUser/your-repo-name.git
+cd your-repo-name
+python -m venv venv
+source venv/bin/activate  # or venv\Scripts\activate on Windows
+pip install -r requirements.txt
+```
 
-## Project Structure
+## 🚀 Usage
+
+This tool is triggered via an AWS Lambda POST API. It fetches data, processes the attendance, and uploads the file to Firebase.
+
+```python
+# Just run the lambda_function.py locally (or test using API)
+python lambda_function.py
+```
+
+Or send a POST request to the AWS Lambda endpoint with:
+```json
+{ "monthname": "April" }
+```
+
+## 🧱 Project Structure
 
 ```
-/old-client-doc-generator
 project-root/
-├── firebase_crud.py             # Handles Firebase Storage/Firestore CRUD operations
-├── firebase-config.json         # Firebase config JSON file (service account credentials)
-├── lambda_function.py           # Entry point for AWS Lambda deployment
-├── package.json                 # (Optional) Node.js config file (possibly unused here)
-├── package-lock.json            # Lock file for exact package versions (if using Node.js)
-├── pdf_generator.py             # Generates PDFs (likely attendance or report-related)
-├── README.md                    # Project overview, usage, setup instructions
-├── requirements.txt             # Python dependencies list
-└── reports/                     # Directory to store generated PDF or report files
+├── firebase_crud.py          # Handles Firebase interaction
+├── firebase-config.json      # Firebase service account key
+├── lambda_function.py        # Entry point (Lambda or local test)
+├── pdf_generator.py          # Creates the XLSX attendance sheet
+├── requirements.txt          # Local-only Python dependencies
+├── reports/                  # Stores generated files locally
+└── README.md                 # This file
 ```
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome! Please fork the repository and submit a pull request.
+Clone it, tweak it, test it — then send a pull request. Let's keep it simple.
 
-## License
+## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+MIT — do whatever you want but don’t blame me later 😄
 
-## Contact
+## 📬 Contact
 
-For any inquiries, please contact [your-email@example.com].
+For issues or help: [your-email@example.com]
+```
+
+Let me know if you want the Lambda deploy instructions too.

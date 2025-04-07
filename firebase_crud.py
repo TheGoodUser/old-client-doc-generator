@@ -2,11 +2,11 @@ from datetime import datetime as dt
 import firebase_admin # type: ignore
 from firebase_admin import credentials, firestore, storage # type: ignore
 import os
-from dotenv import load_dotenv # type: ignore
+# from dotenv import load_dotenv # type: ignore
 
 
 # load .env file
-load_dotenv()
+# load_dotenv()
 
 
 class FirebaseCrud:
@@ -34,7 +34,9 @@ class FirebaseCrud:
 
         # load credentials
         self.__cred = credentials.Certificate("firebase-config.json")
-        firebase_admin.initialize_app(self.__cred, {'storageBucket': self.__firebase_storage_bucket})
+
+        if not firebase_admin._apps:
+            firebase_admin.initialize_app(self.__cred, {'storageBucket': self.__firebase_storage_bucket})
 
 
         # firestore client reference
@@ -187,6 +189,7 @@ class FirebaseCrud:
 
     # the generated documents are uploaded to firebase storage and the download link extracted is returned
     def __upload_document(self, *, file_path:str) -> dict:
+        
         """
         The filename being must be provided with its extension 
 
@@ -209,7 +212,9 @@ class FirebaseCrud:
             |- datetime
                   |- file_path
         '''
-        attendance_storage_path: str = f"attendance_documents_records/{todays_date}/{file_path}"
+
+                                                                    # remove the first "/" from /tmp/j
+        attendance_storage_path: str = f"attendance_documents_records/{todays_date}/{file_path[1:]}"
         blob = self.__bucket.blob(attendance_storage_path)
 
         try:
@@ -233,7 +238,7 @@ class FirebaseCrud:
 
 
     # push attendance details to firebase storage and update details in firebase
-    def push_attendance_document(self, *, monthname: str, file_path: str):
+    def push_attendance_document(self, *, file_path: str):
 
         status: dict = {
             "status": "OK",
@@ -250,8 +255,6 @@ class FirebaseCrud:
             2. month_name         (filename suffix)
             3. .xlsx              (extension)
         """
-        file_name: list[str] = ["ATTENDANCE_REPORT_", monthname.upper(), ".xlsx"]
-
         referencer = self.__attendance_documents
         
         # this avoid multiple db hits

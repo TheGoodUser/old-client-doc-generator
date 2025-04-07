@@ -1,74 +1,135 @@
+# 📂 old-client
 
-# Attendance PDF Generator (AWS Lambda + Firebase)
+Generates monthly attendance `.xlsx` reports from Firebase Firestore for a client’s employee management system. Supports **local testing** and **cloud deployment via AWS Lambda**.
 
-This small project auto-generates attendance reports in XLSX format. Built for client-side usage with Firebase and AWS Lambda integration.
+---
 
-## 🔥 Features
+## ⚙️ Tech Stack
 
-- Create clean attendance XLSX reports.
-- Can be exported/downloaded locally.
-- AWS Lambda supported (with 10 request/day limit).
-- Firebase Storage used for uploading files.
+- AWS Lambda
+- Firebase (Firestore + Storage)
+- Python (`firebase-admin`, `openpyxl`, `dotenv` (only till local testing))
+- CI/CD via GitHub Actions
+- Deployment via YAML config
 
-## 🛠️ Prerequisites
+---
 
-- Python 3.x installed
-- Setup a virtual environment locally (important!)
-- Required packages (via `requirements.txt`):
-  - `firebase_admin`
-  - `openpyxl`
-  - `dotenv` *(exclude this in production)*
+## 📁 Firestore Structure
 
-> Note: On production (Lambda), `firebase_admin` & `openpyxl` are added as AWS Lambda layers. So locally, make sure to install them via pip.
+Ensure your Firestore looks like:
 
-## 📦 Installation (for local use)
+- `documents-generation`
+  - `attendance-documents`
+    - `{2025-04-01}` (date document)
+  - `attendance-fetch-daily-limit`
+- `employee-details`
+  - `<employee_doc_id>`
 
-```bash
-git clone https://github.com/TheGoodUser/your-repo-name.git
-cd your-repo-name
-python -m venv venv
-source venv/bin/activate  # or venv\Scripts\activate on Windows
+📌 Refer to the image ![Firestore Structure](https://i.ibb.co/4n93RMSx/Untitled.png) for visual reference.
+
+---
+
+## 🌍 `.env` Setup
+
+```
+# Firestore
+DOCUMENTS_GENERATION_COLLECTION_NAME=documents-generation
+EMPLOYEE_DETAILS_COLLECTION_NAME=employee-details
+
+# Document names
+ATTENDANCE_DOCUMENTS=attendance-documents
+ATTENDANCE_FETCH_DAILY_LIMIT_DOCUMENT=attendance-fetch-daily-limit
+EMPLOYEE_DETAILS_DOCUMENT_NAME=<your_employee_doc_id>
+
+# Firebase Storage
+FIREBASE_STORAGE_BUCKET_URL=<your-firebase-bucket-url>
+
+# exclue gs:// at the begining of the <your-firebase-bucket-url>
+```
+
+#### 🔒 Note: In production, manage these via Lambda Environment Variables instead of .env.
+
+## 🧪 Local Testing
+✅ Both file generation and Firestore/Storage operations are supported locally.
+
+## Steps: 
+  - <i>Make sure to :-</i>
+    - Place your Firebase Admin SDK as `firebase-config.json`.
+    - Populate Firestore following the structure above.
+    - 📌 `lambda_handler()` is the AWS Lambda entry point.
+Manually invoke it for local testing.
+1. Set up a <b>virtual environment</b>
+
+  - #### Windows
+```
+python -m venv myvenv
+myvenv\Scripts\activate
+```
+- #### Linux/macOS
+```
+python3 -m venv myvenv
+source myvenv/bin/activate
+```
+---
+2. Install dependencies
+
+  - #### Windows
+```
 pip install -r requirements.txt
 ```
+- #### Linux/macOS
+```
+pip3 install -r requirements.txt
+```
+---
+3. launch the program
 
-## 🚀 Usage
-
-This tool is triggered via an AWS Lambda POST API. It fetches data, processes the attendance, and uploads the file to Firebase.
-
-```python
-# Just run the lambda_function.py locally (or test using API)
+  - #### Windows
+```
 python lambda_function.py
 ```
-
-Or send a POST request to the AWS Lambda endpoint with:
-```json
-{ "monthname": "April" }
+- #### Linux/macOS
+```
+python3 lambda_function.py
 ```
 
-## 🧱 Project Structure
 
-```
-project-root/
-├── firebase_crud.py          # Handles Firebase interaction
-├── firebase-config.json      # Firebase service account key
-├── lambda_function.py        # Entry point (Lambda or local test)
-├── pdf_generator.py          # Creates the XLSX attendance sheet
-├── requirements.txt          # Local-only Python dependencies
-├── reports/                  # Stores generated files locally
-└── README.md                 # This file
-```
 
-## 🤝 Contributing
 
-Clone it, tweak it, test it — then send a pull request. Let's keep it simple.
 
-## 📄 License
 
-MIT — do whatever you want but don’t blame me later 😄
+## 🔐 Security Concerns
+ - ❌ Never commit `.env` or `firebase-config.json` to version control.
 
-## 📬 Contact
+ - ✅ Use Firebase rules to restrict Firestore/Storage access.
 
-For issues or help: [your-email@example.com]
-```
+ - ✅ Set Lambda Function URL access to authenticated only or use API key headers (you can test without authentication too).
 
-Let me know if you want the Lambda deploy instructions too.
+ - ✅ Follow least privilege for IAM roles (Lambda, Firebase, CloudWatch).
+---
+
+## 📦 File Structure
+
+| File              | Purpose                                                                 |
+|-------------------|-------------------------------------------------------------------------|
+| `pdf_generator.py` | Generates `.xlsx` files (legacy name from PDF generation functionality) |
+| `firebase_crud.py` | Handles Firebase Firestore and Storage operations                       |
+| `.env`            | Local environment configuration (use Lambda environment in production)  |
+| `*.yaml`          | AWS Lambda deployment configuration files                              |
+| `README.md`       | Project documentation (this file)                                      |
+## Usage
+
+### Environment Configuration
+- In production, set these variables in AWS Lambda environment
+
+### Deployment
+- Configure AWS Lambda settings in the respective `.yaml` files, go through the `.github\workflows\lambda_deplayment.yaml` file for more information.
+
+## Notes
+- The `.xlsx` generation in `pdf_generator.py` maintains a legacy name but handles PDF generation
+
+## 👨‍💻 Author / Contact
+Built by [Siddharth Roy](https://www.linkedin.com/in/siddharth--roy/).
+<br>
+DM on LinkedIn if any setup issues arise or for help with AWS/Firebase.
+

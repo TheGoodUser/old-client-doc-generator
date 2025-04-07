@@ -5,7 +5,7 @@ import pdf_generator
 
 def lambda_handler(event, context):
      # Handle preflight CORS request
-    if event.get("httpMethod") == "OPTIONS":
+    if event['requestContext']['http']['method'] == "OPTIONS":
         return {
             'statusCode': 200,
             'headers': {
